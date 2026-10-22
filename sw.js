@@ -1,0 +1,4 @@
+const CACHE='pdf-voice-exam-20261022-v2';
+self.addEventListener('install',event=>event.waitUntil((async()=>{let list=await (await fetch('precache.json',{cache:'no-store'})).json(),cache=await caches.open(CACHE);for(let i=0;i<list.length;i+=8)await cache.addAll(list.slice(i,i+8));await self.skipWaiting()})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{for(let name of await caches.keys())if(name.startsWith('pdf-voice-exam-')&&name!==CACHE)await caches.delete(name);await self.clients.claim()})()));
+self.addEventListener('fetch',event=>{let u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin)return;if(event.request.mode==='navigate'){event.respondWith(fetch(event.request).catch(()=>caches.match('./')));return}event.respondWith((async()=>{let hit=await caches.match(event.request);return hit||fetch(event.request)})())});
